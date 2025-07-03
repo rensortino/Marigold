@@ -7,19 +7,12 @@ base_config:
 - config/model_sdv2.yaml
 
 pipeline:
-  name: MarigoldDepthPipeline
+  name: MarigoldReflectionPipeline
   kwargs:
     scale_invariant: true
     shift_invariant: true
     default_denoising_steps: 4
     default_processing_resolution: 768
-
-depth_normalization:
-  type: scale_shift_depth
-  clip: true
-  norm_min: -1.0
-  norm_max: 1.0
-  min_max_quantile: 0.02
 
 augmentation:
   lr_flip_p: 0.5
@@ -31,7 +24,7 @@ dataloader:
   seed: 2024  # to ensure continuity when resuming from checkpoint
 
 trainer:
-  name: MarigoldDepthTrainer
+  name: MarigoldReflectionTrainer
   training_noise_scheduler:
     pretrained_path: stable-diffusion-2
   init_seed: 2024  # use null to train w/o seeding
@@ -45,8 +38,8 @@ multi_res_noise:
   annealed: true
   downscale_strategy: original
 
-gt_depth_type: depth_raw_norm
-gt_mask_type: valid_mask_raw
+reflection_type: reflection
+gt_mask_type: gt_mask
 
 max_epoch: 10000  # a large enough number
 max_iter: 30000  # usually converges at around 20k
