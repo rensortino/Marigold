@@ -28,15 +28,10 @@
 # If you find Marigold useful, we kindly ask you to cite our papers.
 # --------------------------------------------------------------------------
 
-from .marigold_depth_trainer import MarigoldDepthTrainer
-from .marigold_iid_trainer import MarigoldIIDTrainer
-from .marigold_normals_trainer import MarigoldNormalsTrainer
-
+from .marigold_reflection_trainer import MarigoldReflectionTrainer
 
 trainer_cls_name_dict = {
-    "MarigoldDepthTrainer": MarigoldDepthTrainer,
-    "MarigoldIIDTrainer": MarigoldIIDTrainer,
-    "MarigoldNormalsTrainer": MarigoldNormalsTrainer,
+    "MarigoldReflectionTrainer": MarigoldReflectionTrainer,
 }
 
 
