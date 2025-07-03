@@ -1,0 +1,9 @@
+dataset:
+  train:
+    name: reflection
+    disp_name: reflection_train
+    dir: train_merged
+    filenames: data_split/reflection/train.txt
+    resize_to_hw:
+    - 480
+    - 640

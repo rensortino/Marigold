@@ -1,0 +1,7 @@
+dataset:
+  val:
+  - name: reflection
+    disp_name: reflection_val
+    dir: val_merged
+    filenames: data_split/reflection/val.txt
+    resize_to_hw: null
