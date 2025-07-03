@@ -1,0 +1,108 @@
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+  - pre-commit
+  - post-checkout
+  - post-merge
+  - post-rewrite
+
+repos:
+
+# ----------------------------- 🔒 Security Tools ---------------------------- #
+
+- repo: https://github.com/gitleaks/gitleaks
+  rev: v8.22.1
+  hooks:
+    - id: gitleaks
+      name: "🔒 security · Detect hardcoded secrets"
+
+# ----------------------- 🔧 Dependency Management Tools --------------------- #
+
+- repo: https://github.com/astral-sh/uv-pre-commit
+  # uv version.
+  rev: 0.7.12
+  hooks:
+    # Update the uv lockfile
+    - id: uv-lock
+      name: "🔧 uv · Update uv lockfile"
+    - id: uv-export
+      name: "🔧 uv · Export uv lockfile to requirements.txt"
+
+# --------------------------- 🔍 Code Quality Tools -------------------------- #
+
+# 🐍 Python
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ruff version.
+  rev: v0.11.13
+  hooks:
+    # Run the formatter.
+    - id: ruff-format
+      name: "🐍 python · Format Python code with Ruff"
+    - id: ruff
+      args: ["check", "--select", "I", "--fix"]
+      name: "🐍 python · Sort imports with Ruff"
+
+# 📝 Markdown
+- repo: https://github.com/hukkin/mdformat
+  rev: 0.7.21
+  hooks:
+    - id: mdformat
+      name: "📝 markdown · Format markdown"
+      additional_dependencies:
+        - mdformat-gfm          # GitHub-Flavored Markdown support
+        - mdformat-ruff
+        - mdformat-frontmatter
+        - ruff
+
+# 📓 Jupyter Notebooks
+- repo: https://github.com/nbQA-dev/nbQA
+  rev: 1.9.1
+  hooks:
+    - id: nbqa
+      entry: nbqa mdformat
+      name: "📓 notebook · Format markdown cells"
+      args: ["--nbqa-md"]
+      types: [jupyter]
+      additional_dependencies:
+        - mdformat
+        - mdformat-gfm
+        - mdformat-ruff
+        - mdformat-frontmatter
+        - ruff
+
+- repo: https://github.com/kynan/nbstripout
+  rev: 0.3.9
+  hooks:
+    - id: nbstripout
+      name: "📓 notebook · Strip output from Jupyter notebooks"
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.6.0
+  hooks:
+    - id: trailing-whitespace
+    - id: end-of-file-fixer
+    - id: check-yaml
+    - id: check-added-large-files
+
+# ------------------------------- 🌳 Git Tools ------------------------------- #
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+    - id: check-merge-conflict
+      name: "🌳 git · Detect conflict markers"
+    - id: no-commit-to-branch
+      name: "🌳 git · Protect main branches"
+      args: ["--branch", "main", "--branch", "master", "--branch", "develop"]
+    - id: check-added-large-files
+      name: "🌳 git · Block large file commits"
+      args: ['--maxkb=5000']
+
+# --------------------------- ✍️ Git Commit Quality -------------------------- #
+
+- repo: https://github.com/commitizen-tools/commitizen
+  rev: v4.1.0
+  hooks:
+    - id: commitizen
+      name: "🌳 git · Validate commit message"
+      stages: [commit-msg]
