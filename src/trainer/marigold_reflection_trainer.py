@@ -46,7 +46,10 @@ from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from marigold.marigold_depth_pipeline import MarigoldDepthOutput, MarigoldDepthPipeline
+from marigold.marigold_reflection_pipeline import (
+    MarigoldReflectionOutput,
+    MarigoldReflectionPipeline,
+)
 from src.util import metric
 from src.util.alignment import align_depth_least_square
 from src.util.data_loader import skip_first_batches
@@ -62,7 +65,7 @@ class MarigoldReflectionTrainer:
     def __init__(
         self,
         cfg: OmegaConf,
-        model: MarigoldDepthPipeline,
+        model: MarigoldReflectionPipeline,
         train_dataloader: DataLoader,
         device,
         out_dir_ckpt,
@@ -73,7 +76,7 @@ class MarigoldReflectionTrainer:
         vis_dataloaders: List[DataLoader] = None,
     ):
         self.cfg: OmegaConf = cfg
-        self.model: MarigoldDepthPipeline = model
+        self.model: MarigoldReflectionPipeline = model
         self.device = device
         self.seed: Union[int, None] = (
             self.cfg.trainer.init_seed
@@ -94,8 +97,12 @@ class MarigoldReflectionTrainer:
         self.model.encode_empty_text()
         self.empty_text_embed = self.model.empty_text_embed.detach().clone().to(device)
 
-        self.model.unet.enable_xformers_memory_efficient_attention()
-
+        try:
+            self.model.unet.enable_xformers_memory_efficient_attention()
+        except Exception as e:
+            logging.warning(
+                "Xformers memory efficient attention is not available, will use default attention."
+            )
         # Trainability
         self.model.vae.requires_grad_(False)
         self.model.text_encoder.requires_grad_(False)
@@ -545,8 +552,8 @@ class MarigoldReflectionTrainer:
                 generator = torch.Generator(device=self.device)
                 generator.manual_seed(seed)
 
-            # Predict depth
-            pipe_out: MarigoldDepthOutput = self.model(
+            # Predict reflection
+            pipe_out: MarigoldReflectionOutput = self.model(
                 rgb_int,
                 denoising_steps=self.cfg.validation.denoising_steps,
                 ensemble_size=self.cfg.validation.ensemble_size,

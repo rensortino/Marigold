@@ -29,16 +29,9 @@
 # --------------------------------------------------------------------------
 
 import os
-from typing import Enum, Union
+from typing import Union
 
-from .base_reflection_dataset import BaseReflectionDataset
-
-
-class DatasetMode(Enum):
-    RGB_ONLY = "rgb_only"
-    EVAL = "evaluate"
-    TRAIN = "train"
-
+from .base_reflection_dataset import BaseReflectionDataset, DatasetMode
 
 dataset_name_class_dict = {
     "reflection": BaseReflectionDataset,

@@ -13,7 +13,11 @@ from torchvision.transforms import InterpolationMode, Resize
 
 from src.util.depth_transform import DepthNormalizerBase
 
-from . import DatasetMode
+
+class DatasetMode(Enum):
+    RGB_ONLY = "rgb_only"
+    EVAL = "evaluate"
+    TRAIN = "train"
 
 
 class BaseReflectionDataset(Dataset):
