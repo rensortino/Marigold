@@ -1,7 +1,9 @@
 dataset:
   vis:
   - name: reflection
-    disp_name: reflection_val
+    disp_name: reflection_vis
     dir: val_merged
-    filenames: data_split/reflection/val.txt
-    resize_to_hw: null
+    filenames: data_split/reflection/vis.txt
+    resize_to_hw:
+    - 1200
+    - 1600

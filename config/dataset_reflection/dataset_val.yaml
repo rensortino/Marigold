@@ -4,4 +4,7 @@ dataset:
     disp_name: reflection_val
     dir: val_merged
     filenames: data_split/reflection/val.txt
-    resize_to_hw: null
+    # resize_to_hw: null
+    resize_to_hw:
+    - 480
+    - 640
