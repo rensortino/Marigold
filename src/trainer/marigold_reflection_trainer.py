@@ -35,6 +35,7 @@ from datetime import datetime
 from typing import List, Union
 
 import numpy as np
+import safetensors
 import torch
 from diffusers import DDIMScheduler, DDPMScheduler
 from omegaconf import OmegaConf
@@ -673,16 +674,18 @@ class MarigoldReflectionTrainer:
     ):
         logging.info(f"Loading checkpoint from: {ckpt_path}")
         # Load UNet
-        _model_path = os.path.join(ckpt_path, "unet", "diffusion_pytorch_model.bin")
-        self.model.unet.load_state_dict(
-            torch.load(_model_path, map_location=self.device)
+        _model_path = os.path.join(
+            ckpt_path, "unet", "diffusion_pytorch_model.safetensors"
         )
+        self.model.unet.load_state_dict(safetensors.torch.load_file(_model_path))
         self.model.unet.to(self.device)
         logging.info(f"UNet parameters are loaded from {_model_path}")
 
         # Load training states
         if load_trainer_state:
-            checkpoint = torch.load(os.path.join(ckpt_path, "trainer.ckpt"))
+            checkpoint = torch.load(
+                os.path.join(ckpt_path, "trainer.ckpt"), weights_only=False
+            )
             self.effective_iter = checkpoint["effective_iter"]
             self.epoch = checkpoint["epoch"]
             self.n_batch_in_epoch = checkpoint["n_batch_in_epoch"]
