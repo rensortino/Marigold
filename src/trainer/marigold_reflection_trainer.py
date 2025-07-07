@@ -538,12 +538,12 @@ class MarigoldReflectionTrainer:
             # Read input image
             rgb_int = batch["rgb_int"]  # [B, 3, H, W]
             # GT depth
-            depth_raw_ts = batch["depth_raw_linear"].squeeze()
-            depth_raw = depth_raw_ts.numpy()
-            depth_raw_ts = depth_raw_ts.to(self.device)
-            valid_mask_ts = batch["valid_mask_raw"].squeeze()
-            valid_mask = valid_mask_ts.numpy()
-            valid_mask_ts = valid_mask_ts.to(self.device)
+            reflection = batch["reflection"].squeeze()
+            # depth_raw = depth_raw_ts.numpy()
+            reflection = reflection.to(self.device)
+            gt_mask = batch["gt_mask"].squeeze()
+            # valid_mask = gt_mask.numpy()
+            gt_mask = gt_mask.to(self.device)
 
             # Random number generator
             seed = val_seed_ls.pop()
@@ -567,36 +567,18 @@ class MarigoldReflectionTrainer:
                 resample_method=self.cfg.validation.resample_method,
             )
 
-            depth_pred: np.ndarray = pipe_out.depth_np
-
-            if "least_square" == self.cfg.eval.alignment:
-                depth_pred, scale, shift = align_depth_least_square(
-                    gt_arr=depth_raw,
-                    pred_arr=depth_pred,
-                    valid_mask_arr=valid_mask,
-                    return_scale_shift=True,
-                    max_resolution=self.cfg.eval.align_max_res,
-                )
-            else:
-                raise RuntimeError(f"Unknown alignment type: {self.cfg.eval.alignment}")
-
-            # Clip to dataset min max
-            depth_pred = np.clip(
-                depth_pred,
-                a_min=data_loader.dataset.min_depth,
-                a_max=data_loader.dataset.max_depth,
-            )
+            refl_pred: np.ndarray = pipe_out.refl_mask
 
             # clip to d > 0 for evaluation
-            depth_pred = np.clip(depth_pred, a_min=1e-6, a_max=None)
+            refl_pred = np.clip(refl_pred, a_min=1e-6, a_max=None)
 
             # Evaluate
             sample_metric = []
-            depth_pred_ts = torch.from_numpy(depth_pred).to(self.device)
+            depth_pred_ts = torch.from_numpy(refl_pred).to(self.device)
 
             for met_func in self.metric_funcs:
                 _metric_name = met_func.__name__
-                _metric = met_func(depth_pred_ts, depth_raw_ts, valid_mask_ts).item()
+                _metric = met_func(depth_pred_ts, reflection, gt_mask).item()
                 sample_metric.append(_metric.__str__())
                 metric_tracker.update(_metric_name, _metric)
 
@@ -604,8 +586,8 @@ class MarigoldReflectionTrainer:
             if save_to_dir is not None:
                 img_name = batch["rgb_relative_path"][0].replace("/", "_")
                 png_save_path = os.path.join(save_to_dir, f"{img_name}.png")
-                depth_to_save = (pipe_out.depth_np * 65535.0).astype(np.uint16)
-                Image.fromarray(depth_to_save).save(png_save_path, mode="I;16")
+                refl_to_save = (pipe_out.refl_mask * 65535.0).astype(np.uint16)
+                Image.fromarray(refl_to_save).save(png_save_path, mode="I;16")
 
         return metric_tracker.result()
 
