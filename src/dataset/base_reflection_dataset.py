@@ -60,8 +60,7 @@ class BaseReflectionDataset(Dataset):
 
     def __getitem__(self, index):
         rasters, other = self._get_data_item(index)
-        if DatasetMode.TRAIN == self.mode:
-            rasters = self._training_preprocess(rasters)
+        rasters = self._preprocess(rasters)
         # merge
         outputs = rasters
         outputs.update(other)
@@ -137,7 +136,7 @@ class BaseReflectionDataset(Dataset):
         reflection_mask = self._read_image(rel_path)
         return reflection_mask.astype(np.uint8)  # Convert to uint8 for consistency
 
-    def _training_preprocess(self, rasters):
+    def _preprocess(self, rasters):
         # Augmentation
         if self.augm_args is not None:
             rasters = self._augment_data(rasters)
