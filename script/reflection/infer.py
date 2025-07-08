@@ -45,10 +45,9 @@ from tqdm.auto import tqdm
 
 from marigold import MarigoldReflectionOutput, MarigoldReflectionPipeline
 from src.dataset import (
-    BaseDepthDataset,
+    BaseReflectionDataset,
     DatasetMode,
     get_dataset,
-    get_pred_name,
 )
 from src.util.seeding import seed_all
 
@@ -201,10 +200,10 @@ if "__main__" == __name__:
     # -------------------- Data --------------------
     cfg_data = OmegaConf.load(dataset_config)
 
-    dataset: BaseDepthDataset = get_dataset(
+    dataset: BaseReflectionDataset = get_dataset(
         cfg_data, base_data_dir=base_data_dir, mode=DatasetMode.RGB_ONLY
     )
-    assert isinstance(dataset, BaseDepthDataset)
+    assert isinstance(dataset, BaseReflectionDataset)
 
     dataloader = DataLoader(dataset, batch_size=1, num_workers=0)
 
@@ -218,10 +217,11 @@ if "__main__" == __name__:
     else:
         dtype = torch.float32
         variant = None
-
+    pretrained_path = "stabilityai/stable-diffusion-2"  # default
     pipe: MarigoldReflectionPipeline = MarigoldReflectionPipeline.from_pretrained(
-        checkpoint_path, variant=variant, torch_dtype=dtype
+        pretrained_path, variant=variant, torch_dtype=dtype
     )
+    pipe.load_finetuned_ckpt(checkpoint_path, device=device)
 
     try:
         pipe.enable_xformers_memory_efficient_attention()
@@ -264,7 +264,7 @@ if "__main__" == __name__:
                 generator=generator,
             )
 
-            depth_pred: np.ndarray = pipe_out.depth_np
+            refl_pred: np.ndarray = pipe_out.refl_mask
 
             # Save predictions
             rgb_filename = batch["rgb_relative_path"][0]
@@ -272,11 +272,17 @@ if "__main__" == __name__:
             scene_dir = os.path.join(output_dir, os.path.dirname(rgb_filename))
             if not os.path.exists(scene_dir):
                 os.makedirs(scene_dir)
-            pred_basename = get_pred_name(
-                rgb_basename, dataset.name_mode, suffix=".npy"
-            )
+
+            pred_basename = f"{os.path.splitext(rgb_basename)[0]}_reflection.npy"
             save_to = os.path.join(scene_dir, pred_basename)
             if os.path.exists(save_to):
                 logging.warning(f"Existing file: '{save_to}' will be overwritten")
 
-            np.save(save_to, depth_pred)
+            np.save(save_to, refl_pred)
+
+            out_img = Image.fromarray((refl_pred * 255).astype(np.uint8), mode="L")
+            out_img.save(
+                os.path.join(
+                    scene_dir, f"{os.path.splitext(rgb_basename)[0]}_reflection.png"
+                )
+            )
