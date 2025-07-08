@@ -51,6 +51,7 @@ from marigold.marigold_reflection_pipeline import (
     MarigoldReflectionOutput,
     MarigoldReflectionPipeline,
 )
+from src.dataset.base_reflection_dataset import DatasetMode
 from src.util import metric
 from src.util.alignment import align_depth_least_square
 from src.util.data_loader import skip_first_batches
@@ -522,6 +523,7 @@ class MarigoldReflectionTrainer:
         data_loader: DataLoader,
         metric_tracker: MetricTracker,
         save_to_dir: str = None,
+        log_to_wandb: bool = True,
     ):
         self.model.to(self.device)
         metric_tracker.reset()
@@ -537,13 +539,17 @@ class MarigoldReflectionTrainer:
             assert 1 == data_loader.batch_size
             # Read input image
             rgb_int = batch["rgb_int"]  # [B, 3, H, W]
-            # GT depth
-            reflection = batch["reflection"].squeeze()
-            # depth_raw = depth_raw_ts.numpy()
-            reflection = reflection.to(self.device)
-            gt_mask = batch["gt_mask"].squeeze()
-            # valid_mask = gt_mask.numpy()
-            gt_mask = gt_mask.to(self.device)
+            if data_loader.dataset.mode != DatasetMode.RGB_ONLY:
+                # GT depth
+                reflection = batch["reflection_mask"].squeeze()
+                # depth_raw = depth_raw_ts.numpy()
+                reflection = reflection.to(self.device)
+                gt_mask = batch["reflection_mask_bool"].squeeze()
+                # valid_mask = gt_mask.numpy()
+                gt_mask = gt_mask.to(self.device)
+            else:
+                reflection = None
+                gt_mask = None
 
             # Random number generator
             seed = val_seed_ls.pop()
@@ -573,21 +579,38 @@ class MarigoldReflectionTrainer:
             refl_pred = np.clip(refl_pred, a_min=1e-6, a_max=None)
 
             # Evaluate
-            sample_metric = []
-            depth_pred_ts = torch.from_numpy(refl_pred).to(self.device)
+            if data_loader.dataset.mode != DatasetMode.RGB_ONLY:
+                sample_metric = []
+                depth_pred_ts = torch.from_numpy(refl_pred).to(self.device)
 
-            for met_func in self.metric_funcs:
-                _metric_name = met_func.__name__
-                _metric = met_func(depth_pred_ts, reflection, gt_mask).item()
-                sample_metric.append(_metric.__str__())
-                metric_tracker.update(_metric_name, _metric)
+                for met_func in self.metric_funcs:
+                    _metric_name = met_func.__name__
+                    _metric = met_func(depth_pred_ts, reflection, gt_mask).item()
+                    sample_metric.append(_metric.__str__())
+                    metric_tracker.update(_metric_name, _metric)
 
             # Save as 16-bit uint png
             if save_to_dir is not None:
                 img_name = batch["rgb_relative_path"][0].replace("/", "_")
                 png_save_path = os.path.join(save_to_dir, f"{img_name}.png")
-                refl_to_save = (pipe_out.refl_mask * 65535.0).astype(np.uint16)
-                Image.fromarray(refl_to_save).save(png_save_path, mode="I;16")
+                refl_to_save = (pipe_out.refl_mask * 255.0).astype(np.uint8)
+                Image.fromarray(refl_to_save).save(png_save_path, mode="L")
+
+            if log_to_wandb and i <= 4:  # Only visualize the first 4 samples
+                refl_to_save = (pipe_out.refl_mask * 255.0).astype(np.uint8)
+                refl_to_save = torch.from_numpy(refl_to_save)
+
+                if data_loader.dataset.mode == DatasetMode.RGB_ONLY:
+                    reflection = gt_mask = torch.zeros_like(refl_to_save)
+                else:
+                    reflection = (reflection * 255).type(torch.uint8)
+                    gt_mask = (gt_mask * 255).type(torch.uint8)
+
+                tb_logger.log_images(
+                    tag=f"val/{data_loader.dataset.disp_name}/refl_pred",
+                    imgs=[rgb_int.squeeze(), refl_to_save, reflection, gt_mask],
+                    global_step=self.effective_iter,
+                )
 
         return metric_tracker.result()
 

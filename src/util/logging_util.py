@@ -31,9 +31,13 @@
 import logging
 import os
 import sys
-import wandb
+
+import torch
 from tabulate import tabulate
 from torch.utils.tensorboard import SummaryWriter
+from torchvision.utils import make_grid
+
+import wandb
 
 
 def config_logging(cfg_logging, out_dir=None):
@@ -85,6 +89,32 @@ class MyTrainingLogger:
         for k, v in scalar_dict.items():
             self.writer.add_scalar(k, v, global_step=global_step, walltime=walltime)
         return
+
+    def log_images(self, tag, imgs, global_step=None):
+        """
+        Log an image to TensorBoard and wandb.
+
+        Args:
+            tag (str): The tag for the image.
+            imgs (list[torch.Tensor]): The image tensors to log. They have to have the same H and W
+            global_step (int, optional): Global step value to record with the image.
+            walltime (float, optional): Wall time to record with the image.
+        """
+        for i, img in enumerate(imgs):
+            # Ensure each img is a tensor in the format [C, H, W] with C=3
+            if len(img.shape) == 2:
+                img = img.unsqueeze(0)
+            if img.shape[0] == 1:
+                img = img.repeat(3, 1, 1)
+            imgs[i] = img.cpu()
+        imgs = torch.stack(imgs)
+        grid = make_grid(imgs.float(), nrow=int(imgs.shape[0] ** 0.5), normalize=True)
+        # Resize the grid to a fixed size
+        grid = torch.nn.functional.interpolate(
+            grid.unsqueeze(0).float(), (768, 1024)
+        ).squeeze()
+        # self.writer.add_image(tag, grid, global_step=global_step, dataformats="CHW")
+        wandb.log({tag: wandb.Image(grid)})
 
 
 # global instance

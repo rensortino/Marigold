@@ -325,7 +325,7 @@ if "__main__" == __name__:
         _vis_dataset = get_dataset(
             _vis_dict,
             base_data_dir=base_data_dir,
-            mode=DatasetMode.EVAL,
+            mode=DatasetMode.RGB_ONLY,
         )
         _vis_loader = DataLoader(
             dataset=_vis_dataset,
