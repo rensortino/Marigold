@@ -67,7 +67,9 @@ class BaseReflectionDataset(Dataset):
         return outputs
 
     def _get_data_item(self, index):
-        rgb_rel_path, reflection_rel_path = self._get_data_path(index=index)
+        rgb_rel_path, mask_rel_path, reflection_rel_path = self._get_data_path(
+            index=index
+        )
 
         rasters = {}
 
@@ -77,17 +79,19 @@ class BaseReflectionDataset(Dataset):
         # Depth data
         if DatasetMode.RGB_ONLY != self.mode:
             # load data
-            reflection_data = self._load_binary_data(
-                reflection_rel_path=reflection_rel_path
-            )
-            # rasters.update(reflection_data)
+            reflection_rgb = self._load_rgb_data(reflection_rel_path)
+            reflection_rgb = {
+                k.replace("rgb", "reflection"): v for k, v in reflection_rgb.items()
+            }
+            rasters.update(reflection_rgb)
+            reflection_mask = self._load_binary_data(reflection_rel_path=mask_rel_path)
             # valid mask
-            rasters["reflection"] = reflection_data.clone()
-            reflection_data[reflection_data > 0.5] = 1.0
-            reflection_data[reflection_data <= 0.5] = 0.0
+            rasters["reflection_mask"] = reflection_mask.clone()
+            reflection_mask[reflection_mask > 0.5] = 1.0
+            reflection_mask[reflection_mask <= 0.5] = 0.0
 
             # Convert to uint8 for consistency
-            rasters["gt_mask"] = reflection_data.bool()
+            rasters["reflection_mask_bool"] = reflection_mask.bool()
 
         other = {"index": index, "rgb_relative_path": rgb_rel_path}
 
@@ -117,9 +121,13 @@ class BaseReflectionDataset(Dataset):
         filename_line = self.filenames[index]
 
         # Get data path
-        rgb_rel_path, reflection_rel_path = filename_line
+        (
+            rgb_rel_path,
+            mask_rel_path,
+            reflection_rel_path,
+        ) = filename_line
 
-        return rgb_rel_path, reflection_rel_path
+        return rgb_rel_path, mask_rel_path, reflection_rel_path
 
     def _read_image(self, img_rel_path) -> np.ndarray:
         image_to_read = os.path.join(self.dataset_dir, img_rel_path)

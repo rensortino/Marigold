@@ -29,6 +29,7 @@
 # --------------------------------------------------------------------------
 
 from .marigold_reflection_pipeline import (
+    MarigoldReflectionOutput,
     MarigoldReflectionPipeline,
 )
 
