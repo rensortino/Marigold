@@ -5,13 +5,14 @@ import cv2
 import numpy as np
 import skimage
 from PIL import Image
+from tqdm import tqdm
 
 
 def main(image_dir, outdir, overlay_images=True):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    for image_path in os.listdir(image_dir):
+    for image_path in tqdm(os.listdir(image_dir)):
         if image_path.endswith("_cut.jpg") or image_path.endswith("_surfaceMask.jpg"):
             continue
 
@@ -41,7 +42,9 @@ def main(image_dir, outdir, overlay_images=True):
         refl_mask = gray_masked_im_otsu < reflection_thresh
         refl_mask = refl_mask.astype(np.uint8) * 255  # Convert boolean mask
 
-        if (masked_im * refl_mask[..., None])[:, :, 0][refl_mask != 0].mean() < 85:
+        if (masked_im * refl_mask[..., None])[:, :, 0][
+            refl_mask != 0
+        ].mean() < 85:  # Empirical threshold obtained from some observations
             # If the mean value of the reflection area is too low, we use a different threshold
             reflection_thresh = otsu_thresh[
                 0
@@ -50,16 +53,25 @@ def main(image_dir, outdir, overlay_images=True):
             refl_mask = refl_mask.astype(np.uint8) * 255  # Convert boolean mask
 
         opened_mask = cv2.morphologyEx(
-            refl_mask, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8), iterations=8
+            refl_mask, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8), iterations=4
         )
         closed_mask = cv2.morphologyEx(
-            opened_mask, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8), iterations=8
+            opened_mask, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8), iterations=4
         )
-        dilated_mask = cv2.dilate(closed_mask, np.ones((3, 3), np.uint8), iterations=12)
+        final_mask = cv2.dilate(closed_mask, np.ones((3, 3), np.uint8), iterations=4)
+
+        reflection_image = im_arr.copy()
+        reflection_image = reflection_image * (final_mask[..., None] / 255)
+        reflection_image = reflection_image.astype(np.uint8)
+        reflection_image = cv2.medianBlur(reflection_image, 7)
 
         cv2.imwrite(
-            os.path.join(outdir, image_path),
-            (dilated_mask).astype(np.uint8),
+            os.path.join(outdir, image_path.replace(".jpg", "_mask.jpg")),
+            (final_mask).astype(np.uint8),
+        )
+        cv2.imwrite(
+            os.path.join(outdir, image_path.replace(".jpg", "_reflection.jpg")),
+            reflection_image.astype(np.uint8),
         )
 
         if overlay_images:
@@ -67,9 +79,9 @@ def main(image_dir, outdir, overlay_images=True):
                 os.makedirs("overlay_images")
             original_image = Image.fromarray(im_arr).convert("RGBA")
             mask_overlay = np.full(
-                (*dilated_mask.shape, 4), [255, 0, 0, 60], dtype=np.uint8
+                (*final_mask.shape, 4), [255, 0, 0, 60], dtype=np.uint8
             )
-            dilated_mask_bin = (dilated_mask / 255).astype(np.uint8)
+            dilated_mask_bin = (final_mask / 255).astype(np.uint8)
             mask_overlay = dilated_mask_bin[..., None] * mask_overlay
             mask_image = Image.fromarray(mask_overlay, mode="RGBA")
             img = Image.alpha_composite(original_image, mask_image)
@@ -90,7 +102,10 @@ if __name__ == "__main__":
         help="Directory containing input images.",
     )
     parser.add_argument(
-        "--outdir", type=str, default="output", help="Directory to save output masks."
+        "--outdir",
+        type=str,
+        default="processed",
+        help="Directory to save output masks.",
     )
     parser.add_argument(
         "--overlay_images", action="store_true", help="Save overlay images."
