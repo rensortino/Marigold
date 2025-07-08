@@ -29,9 +29,11 @@
 # --------------------------------------------------------------------------
 
 import logging
+import os
 from typing import Dict, Optional, Union
 
 import numpy as np
+import safetensors
 import torch
 from diffusers import (
     AutoencoderKL,
@@ -42,6 +44,7 @@ from diffusers import (
 )
 from diffusers.utils import BaseOutput
 from PIL import Image
+from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 from torchvision.transforms import InterpolationMode
 from torchvision.transforms.functional import pil_to_tensor, resize
@@ -145,6 +148,37 @@ class MarigoldReflectionPipeline(DiffusionPipeline):
         self.default_processing_resolution = default_processing_resolution
 
         self.empty_text_embed = None
+
+    def load_finetuned_ckpt(self, checkpoint_path: str, device: torch.device):
+        """
+        Load a finetuned checkpoint for the Marigold Reflection Pipeline.
+        """
+        if 8 != self.unet.config["in_channels"]:
+            # Replace the input layer with the one with 8 channels
+            _weight = self.unet.conv_in.weight.clone()  # [320, 4, 3, 3]
+            _weight = _weight.repeat(1, 2, 1, 1)
+            # _bias = self.unet.conv_in.bias.clone()  # [320]
+            _n_convin_out_channel = self.unet.conv_in.out_channels
+            _new_conv_in = nn.Conv2d(
+                8,
+                _n_convin_out_channel,
+                kernel_size=(3, 3),
+                stride=(1, 1),
+                padding=(1, 1),
+            )
+            _new_conv_in.weight = nn.Parameter(_weight)
+            # _new_conv_in.bias = nn.Parameter(_bias)
+            self.unet.conv_in = _new_conv_in
+            logging.info("Unet conv_in layer is replaced")
+            # replace config
+            self.unet.config["in_channels"] = 8
+            logging.info("Unet config is updated")
+
+        _model_path = os.path.join(
+            checkpoint_path, "unet", "diffusion_pytorch_model.safetensors"
+        )
+        self.unet.load_state_dict(safetensors.torch.load_file(_model_path))
+        self.unet.to(self.device)
 
     @torch.no_grad()
     def __call__(

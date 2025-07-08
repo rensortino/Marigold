@@ -209,10 +209,11 @@ if "__main__" == __name__:
     else:
         dtype = torch.float32
         variant = None
-
+    pretrained_path = "stabilityai/stable-diffusion-v2-1"  # default
     pipe: MarigoldReflectionPipeline = MarigoldReflectionPipeline.from_pretrained(
-        checkpoint_path, variant=variant, torch_dtype=dtype
+        pretrained_path, variant=variant, torch_dtype=dtype
     )
+    pipe.load_finetuned_ckpt(checkpoint_path, device=device)
 
     try:
         pipe.enable_xformers_memory_efficient_attention()
