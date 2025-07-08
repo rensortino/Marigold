@@ -1,41 +1,41 @@
-audi-reflection_0000.jpg	audi-reflection_0000_mask.jpg
-audi-reflection_0020.jpg	audi-reflection_0020_mask.jpg
-audi-reflection_0040.jpg	audi-reflection_0040_mask.jpg
-audi-reflection_0060.jpg	audi-reflection_0060_mask.jpg
-audi-reflection_0080.jpg	audi-reflection_0080_mask.jpg
-audi-reflection_0099.jpg	audi-reflection_0099_mask.jpg
-chevy-reflection_0001.jpg	chevy-reflection_0001_mask.jpg
-chevy-reflection_0021.jpg	chevy-reflection_0021_mask.jpg
-chevy-reflection_0041.jpg	chevy-reflection_0041_mask.jpg
-chevy-reflection_0061.jpg	chevy-reflection_0061_mask.jpg
-chevy-reflection_0081.jpg	chevy-reflection_0081_mask.jpg
-ford-reflection_0002.jpg	ford-reflection_0002_mask.jpg
-ford-reflection_0022.jpg	ford-reflection_0022_mask.jpg
-ford-reflection_0042.jpg	ford-reflection_0042_mask.jpg
-ford-reflection_0062.jpg	ford-reflection_0062_mask.jpg
-ford-reflection_0082.jpg	ford-reflection_0082_mask.jpg
-jeep-reflection_0003.jpg	jeep-reflection_0003_mask.jpg
-jeep-reflection_0023.jpg	jeep-reflection_0023_mask.jpg
-jeep-reflection_0043.jpg	jeep-reflection_0043_mask.jpg
-jeep-reflection_0063.jpg	jeep-reflection_0063_mask.jpg
-jeep-reflection_0083.jpg	jeep-reflection_0083_mask.jpg
-land-rover-reflection_0004.jpg	land-rover-reflection_0004_mask.jpg
-land-rover-reflection_0024.jpg	land-rover-reflection_0024_mask.jpg
-land-rover-reflection_0044.jpg	land-rover-reflection_0044_mask.jpg
-land-rover-reflection_0064.jpg	land-rover-reflection_0064_mask.jpg
-land-rover-reflection_0084.jpg	land-rover-reflection_0084_mask.jpg
-mercedes-reflection_0005.jpg	mercedes-reflection_0005_mask.jpg
-mercedes-reflection_0025.jpg	mercedes-reflection_0025_mask.jpg
-mercedes-reflection_0045.jpg	mercedes-reflection_0045_mask.jpg
-mercedes-reflection_0065.jpg	mercedes-reflection_0065_mask.jpg
-mercedes-reflection_0085.jpg	mercedes-reflection_0085_mask.jpg
-porsche-reflection_0006.jpg	porsche-reflection_0006_mask.jpg
-porsche-reflection_0026.jpg	porsche-reflection_0026_mask.jpg
-porsche-reflection_0046.jpg	porsche-reflection_0046_mask.jpg
-porsche-reflection_0066.jpg	porsche-reflection_0066_mask.jpg
-porsche-reflection_0086.jpg	porsche-reflection_0086_mask.jpg
-volvo-reflection_0008.jpg	volvo-reflection_0008_mask.jpg
-volvo-reflection_0028.jpg	volvo-reflection_0028_mask.jpg
-volvo-reflection_0048.jpg	volvo-reflection_0048_mask.jpg
-volvo-reflection_0068.jpg	volvo-reflection_0068_mask.jpg
-volvo-reflection_0088.jpg	volvo-reflection_0088_mask.jpg
+audi-reflection_0000_cut.jpg	audi-reflection_0000_mask.jpg	audi-reflection_0000_reflection.jpg
+chevy-reflection_0021_cut.jpg	chevy-reflection_0021_mask.jpg	chevy-reflection_0021_reflection.jpg
+jeep-reflection_0063_cut.jpg	jeep-reflection_0063_mask.jpg	jeep-reflection_0063_reflection.jpg
+porsche-reflection_0026_cut.jpg	porsche-reflection_0026_mask.jpg	porsche-reflection_0026_reflection.jpg
+audi-reflection_0020_cut.jpg	audi-reflection_0020_mask.jpg	audi-reflection_0020_reflection.jpg
+audi-reflection_0040_cut.jpg	audi-reflection_0040_mask.jpg	audi-reflection_0040_reflection.jpg
+audi-reflection_0060_cut.jpg	audi-reflection_0060_mask.jpg	audi-reflection_0060_reflection.jpg
+audi-reflection_0080_cut.jpg	audi-reflection_0080_mask.jpg	audi-reflection_0080_reflection.jpg
+audi-reflection_0099_cut.jpg	audi-reflection_0099_mask.jpg	audi-reflection_0099_reflection.jpg
+chevy-reflection_0001_cut.jpg	chevy-reflection_0001_mask.jpg	chevy-reflection_0001_reflection.jpg
+chevy-reflection_0041_cut.jpg	chevy-reflection_0041_mask.jpg	chevy-reflection_0041_reflection.jpg
+chevy-reflection_0061_cut.jpg	chevy-reflection_0061_mask.jpg	chevy-reflection_0061_reflection.jpg
+chevy-reflection_0081_cut.jpg	chevy-reflection_0081_mask.jpg	chevy-reflection_0081_reflection.jpg
+ford-reflection_0002_cut.jpg	ford-reflection_0002_mask.jpg	ford-reflection_0002_reflection.jpg
+ford-reflection_0022_cut.jpg	ford-reflection_0022_mask.jpg	ford-reflection_0022_reflection.jpg
+ford-reflection_0042_cut.jpg	ford-reflection_0042_mask.jpg	ford-reflection_0042_reflection.jpg
+ford-reflection_0062_cut.jpg	ford-reflection_0062_mask.jpg	ford-reflection_0062_reflection.jpg
+ford-reflection_0082_cut.jpg	ford-reflection_0082_mask.jpg	ford-reflection_0082_reflection.jpg
+jeep-reflection_0003_cut.jpg	jeep-reflection_0003_mask.jpg	jeep-reflection_0003_reflection.jpg
+jeep-reflection_0023_cut.jpg	jeep-reflection_0023_mask.jpg	jeep-reflection_0023_reflection.jpg
+jeep-reflection_0043_cut.jpg	jeep-reflection_0043_mask.jpg	jeep-reflection_0043_reflection.jpg
+jeep-reflection_0083_cut.jpg	jeep-reflection_0083_mask.jpg	jeep-reflection_0083_reflection.jpg
+land-rover-reflection_0004_cut.jpg	land-rover-reflection_0004_mask.jpg	land-rover-reflection_0004_reflection.jpg
+land-rover-reflection_0024_cut.jpg	land-rover-reflection_0024_mask.jpg	land-rover-reflection_0024_reflection.jpg
+land-rover-reflection_0044_cut.jpg	land-rover-reflection_0044_mask.jpg	land-rover-reflection_0044_reflection.jpg
+land-rover-reflection_0064_cut.jpg	land-rover-reflection_0064_mask.jpg	land-rover-reflection_0064_reflection.jpg
+land-rover-reflection_0084_cut.jpg	land-rover-reflection_0084_mask.jpg	land-rover-reflection_0084_reflection.jpg
+mercedes-reflection_0005_cut.jpg	mercedes-reflection_0005_mask.jpg	mercedes-reflection_0005_reflection.jpg
+mercedes-reflection_0025_cut.jpg	mercedes-reflection_0025_mask.jpg	mercedes-reflection_0025_reflection.jpg
+mercedes-reflection_0045_cut.jpg	mercedes-reflection_0045_mask.jpg	mercedes-reflection_0045_reflection.jpg
+mercedes-reflection_0065_cut.jpg	mercedes-reflection_0065_mask.jpg	mercedes-reflection_0065_reflection.jpg
+mercedes-reflection_0085_cut.jpg	mercedes-reflection_0085_mask.jpg	mercedes-reflection_0085_reflection.jpg
+porsche-reflection_0006_cut.jpg	porsche-reflection_0006_mask.jpg	porsche-reflection_0006_reflection.jpg
+porsche-reflection_0046_cut.jpg	porsche-reflection_0046_mask.jpg	porsche-reflection_0046_reflection.jpg
+porsche-reflection_0066_cut.jpg	porsche-reflection_0066_mask.jpg	porsche-reflection_0066_reflection.jpg
+porsche-reflection_0086_cut.jpg	porsche-reflection_0086_mask.jpg	porsche-reflection_0086_reflection.jpg
+volvo-reflection_0008_cut.jpg	volvo-reflection_0008_mask.jpg	volvo-reflection_0008_reflection.jpg
+volvo-reflection_0028_cut.jpg	volvo-reflection_0028_mask.jpg	volvo-reflection_0028_reflection.jpg
+volvo-reflection_0048_cut.jpg	volvo-reflection_0048_mask.jpg	volvo-reflection_0048_reflection.jpg
+volvo-reflection_0068_cut.jpg	volvo-reflection_0068_mask.jpg	volvo-reflection_0068_reflection.jpg
+volvo-reflection_0088_cut.jpg	volvo-reflection_0088_mask.jpg	volvo-reflection_0088_reflection.jpg

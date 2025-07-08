@@ -2,7 +2,7 @@ dataset:
   vis:
   - name: reflection
     disp_name: reflection_vis
-    dir: val_merged
+    dir: test-cut
     filenames: data_split/reflection/vis.txt
     resize_to_hw:
     - 1200

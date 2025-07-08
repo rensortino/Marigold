@@ -2,9 +2,14 @@ base_config:
   - config/train_marigold_reflection.yaml
 
 trainer:
-  save_period: 5
+  save_period: 4
   backup_period: 10
-  validation_period: 5
-  visualization_period: 5
+  validation_period: 2
+  visualization_period: 2
+
+dataloader:
+  num_workers: 0
+  effective_batch_size: 4
+  max_train_batch_size: 2
 
 max_iter: 50
